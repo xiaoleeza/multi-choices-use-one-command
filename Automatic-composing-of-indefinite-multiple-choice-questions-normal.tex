@@ -1,0 +1,316 @@
+%%实现选择题2，3，4，5个选项的情况下自动根据选项长度排版的目的
+%%使用方法
+%%\xx{#1}{#2}
+%%\xx{#1}{#2}{#3}
+%%\xx{#1}{#2}{#3}{#4}
+%%\xx{#1}{#2}{#3}{#4}{#5}
+\documentclass[UTF8]{ctexart}
+\usepackage{ifthen}
+\usepackage{enumitem}
+\usepackage[showframe]{geometry}
+
+\newlength{\testxxla}
+\newlength{\testxxlb}
+\newlength{\testxxlc}
+\newlength{\testxxld}
+\newlength{\testxxle}
+\newlength{\lhalf}
+\newlength{\ltrisect}
+\newlength{\lquarter}
+\newlength{\lfifth}
+\newlength{\lmax}
+
+%-----------------------------------------------------------------------------%
+% 无标签的两选项，输出方式：一行二选项
+%-----------------------------------------------------------------------------%
+\newcommand{\testtwo}[2]
+{\par
+	\setlength{\lhalf}{0.5\linewidth}
+	
+	\makebox[\lhalf][l]{#1~~~}%
+	\makebox[\lhalf][l]{#2~~~}%
+	
+}
+%-----------------------------------------------------------------------------%
+% 四选项，根据选项的长度自动判断输出方式：一行一选项，一行二选项，一行四选项
+%-----------------------------------------------------------------------------%
+\newcommand{\testxx}[4]
+{
+    \par
+    \settowidth{\testxxla}{A.~#1~~~}
+    \settowidth{\testxxlb}{B.~#2~~~}
+    \settowidth{\testxxlc}{C.~#3~~~}
+    \settowidth{\testxxld}{D.~#4~~~}
+    \ifthenelse{\lengthtest{\testxxla>\testxxlb}}{\setlength{\lmax}{\testxxla}}{\setlength{\lmax}{\testxxlb}}
+    \ifthenelse{\lengthtest{\testxxlc>\lmax}}{\setlength{\lmax}{\testxxlc}}{}
+    \ifthenelse{\lengthtest{\testxxld>\lmax}}{\setlength{\lmax}{\testxxld}}{}
+    \setlength{\lhalf}{0.5\linewidth}
+    \setlength{\lquarter}{0.25\linewidth}
+    \ifthenelse{\lengthtest{\lmax>\lhalf}}
+    {
+        \begin{enumerate}[label=\Alph*.,parsep=0ex,itemsep=0ex,leftmargin=6mm, topsep=0ex]
+            \item #1
+            \item #2
+            \item #3
+            \item #4
+        \end{enumerate}
+    }
+    {
+        \ifthenelse{\lengthtest{\lmax>\lquarter}}
+        {
+            \noindent%
+            \makebox[\lhalf][l]{A.~#1~~~}%
+            \makebox[\lhalf][l]{B.~#2~~~}%
+            \par\noindent%
+            \makebox[\lhalf][l]{C.~#3~~~}%
+            \makebox[\lhalf][l]{D.~#4~~~}%
+        }%
+        {
+            \noindent%
+            \makebox[\lquarter][l]{A.~#1~~~}%
+            \makebox[\lquarter][l]{B.~#2~~~}%
+            \makebox[\lquarter][l]{C.~#3~~~}%
+            \makebox[\lquarter][l]{D.~#4~~~}%
+        }
+    }
+}
+%-----------------------------------------------------------------------------%
+% 五选项，根据选项的长度自动判断输出方式：一行一选项，一行二选项，一行四选项
+%-----------------------------------------------------------------------------%
+\newcommand{\testxxf}[5]
+{
+    \par
+    \settowidth{\testxxla}{A.~#1~~~}
+    \settowidth{\testxxlb}{B.~#2~~~}
+    \settowidth{\testxxlc}{C.~#3~~~}
+    \settowidth{\testxxld}{D.~#4~~~}
+    \settowidth{\testxxle}{E.~#5~~~}
+    \ifthenelse{\lengthtest{\testxxla>\testxxlb}}{\setlength{\lmax}{\testxxla}}{\setlength{\lmax}{\testxxlb}}
+    \ifthenelse{\lengthtest{\testxxlc>\lmax}}{\setlength{\lmax}{\testxxlc}}{}
+    \ifthenelse{\lengthtest{\testxxld>\lmax}}{\setlength{\lmax}{\testxxld}}{}
+    \ifthenelse{\lengthtest{\testxxle>\lmax}}{\setlength{\lmax}{\testxxle}}{}
+    \setlength{\lhalf}{0.5\linewidth}
+    \setlength{\ltrisect}{0.33\linewidth}
+    \setlength{\lquarter}{0.25\linewidth}
+    \setlength{\lfifth}{0.2\linewidth}
+    \ifthenelse{\lengthtest{\lmax>\lhalf}}
+    {
+        \begin{enumerate}[label=\Alph*.,parsep=0ex,itemsep=0ex,leftmargin=6mm, topsep=0ex]
+            \item #1
+            \item #2
+            \item #3
+            \item #4
+            \item #5
+        \end{enumerate}
+    }
+    {
+        \ifthenelse{\lengthtest{\lmax>\ltrisect}}
+        {
+            \noindent%
+            \makebox[\lhalf][l]{A.~#1~~~}%
+            \makebox[\lhalf][l]{B.~#2~~~}%
+            \par\noindent%
+            \makebox[\lhalf][l]{C.~#3~~~}%
+            \makebox[\lhalf][l]{D.~#4~~~}%
+            \par\noindent%
+            \makebox[\lhalf][l]{E.~#5~~~}%
+            \makebox[\lhalf][l]{}%
+        }
+        {
+            \ifthenelse{\lengthtest{\lmax>\lquarter}}
+            {
+                \noindent%
+                \makebox[\ltrisect][l]{A.~#1~~~}%
+                \makebox[\ltrisect][l]{B.~#2~~~}%
+                \makebox[\ltrisect][l]{C.~#3~~~}%
+                \par\noindent%
+                \makebox[\ltrisect][l]{D.~#4~~~}%
+                \makebox[\ltrisect][l]{E.~#5~~~}%
+                \makebox[\ltrisect][l]{}%
+            }
+            {
+                \ifthenelse{\lengthtest{\lmax>\lfifth}}
+                {
+                    \noindent%
+                    \makebox[\lquarter][l]{A.~#1~~~}%
+                    \makebox[\lquarter][l]{B.~#2~~~}%
+                    \makebox[\lquarter][l]{C.~#3~~~}%
+                    \makebox[\lquarter][l]{D.~#4~~~}%
+                    \par\noindent%
+                    \makebox[\lquarter][l]{E.~#5~~~}%
+                    \makebox[\lquarter][l]{}%
+                    \makebox[\lquarter][l]{}%
+                    \makebox[\lquarter][l]{}%
+                }
+                {
+                    \noindent%
+                    \makebox[\lfifth][l]{A.~#1~~~}%
+                    \makebox[\lfifth][l]{B.~#2~~~}%
+                    \makebox[\lfifth][l]{C.~#3~~~}%
+                    \makebox[\lfifth][l]{D.~#4~~~}%
+                    \makebox[\lfifth][l]{E.~#5~~~}%
+                }
+            }
+        }
+    }
+}
+%-----------------------------------------------------------------------------%
+% 三选项，根据选项的长度自动判断输出方式：一行一选项，一行二选项，一行三选项
+%-----------------------------------------------------------------------------%
+\newcommand{\testxxs}[3]
+{
+    \par
+    \settowidth{\testxxla}{A.~#1~~~}
+    \settowidth{\testxxlb}{B.~#2~~~}
+    \settowidth{\testxxlc}{C.~#3~~~}
+    \ifthenelse{\lengthtest{\testxxla>\testxxlb}}{\setlength{\lmax}{\testxxla}}{\setlength{\lmax}{\testxxlb}}
+    \ifthenelse{\lengthtest{\testxxlc>\lmax}}{\setlength{\lmax}{\testxxlc}}{}
+    \setlength{\lhalf}{0.5\linewidth}
+    \setlength{\ltrisect}{0.33\linewidth}
+    \ifthenelse{\lengthtest{\lmax>\lhalf}}
+    {
+        \begin{enumerate}[label=\Alph*.,parsep=0ex,itemsep=0ex,leftmargin=6mm, topsep=0ex]
+            \item #1
+            \item #2
+            \item #3
+        \end{enumerate}
+    }
+    {
+        \ifthenelse{\lengthtest{\lmax>\ltrisect}}
+        {
+            \noindent%
+            \makebox[\lhalf][l]{A.~#1~~~}%
+            \makebox[\lhalf][l]{B.~#2~~~}%
+            \par\noindent%
+            \makebox[\lhalf][l]{C.~#3~~~}%
+        }%
+        {
+            \noindent%
+            \makebox[\ltrisect][l]{A.~#1~~~}%
+            \makebox[\ltrisect][l]{B.~#2~~~}%
+            \makebox[\ltrisect][l]{C.~#3~~~}%
+        }
+    }
+}
+
+
+\makeatletter
+\newcommand{\xx@i}[2]{\testtwo{#1}{#2}}
+\newcommand{\xx@ii}[3]{\testxxs{#1}{#2}{#3}}
+\newcommand{\xx@iii}[4]{\testxx{#1}{#2}{#3}{#4}}
+\newcommand{\xx@iv}[5]{\testxxf{#1}{#2}{#3}{#4}{#5}}
+\newcommand{\xx@iii@helper}[4]{%
+	\@ifnextchar\bgroup
+	{\xx@iv{#1}{#2}{#3}{#4}}{\xx@iii{#1}{#2}{#3}{#4}}}
+\newcommand{\xx@ii@helper}[3]{%
+	\@ifnextchar\bgroup
+	{\xx@iii@helper{#1}{#2}{#3}}{\xx@ii{#1}{#2}{#3}}}
+\newcommand{\xx}[2]{%
+	\@ifnextchar\bgroup
+	{\xx@ii@helper{#1}{#2}}{\xx@i{#1}{#2}}}
+\makeatother
+
+
+
+\begin{document}
+\section{两选项}
+\xx
+{这个选项长一点，}
+{选项二1}
+
+\section{四选项}
+\subsection{一行一项}
+\xx
+{这个选项长一点，超过行宽的一半就可以了}
+{选项二1}
+{选项三}
+{选项四}
+
+
+\subsection{一行二项}
+\xx
+{超过行宽的四分之一}
+{选项二}
+{选项三}
+{选项四}
+
+\subsection{一行四项}
+\xx
+{选项一}
+{选项二}
+{选项三}
+{选项四}
+
+\section{三选项}
+\subsection{一行一项}
+\xx
+{这个选项长一点，超过行宽的一半就可以了}
+{选项二}
+{选项三}
+
+\subsection{一行二项}
+\xx
+{如果超过行宽的三分之一，那么}
+{选项二}
+{选项三}
+
+\subsection{一行三项}
+\xx
+{选项一}
+{选项二}
+{选项三}
+
+\section{五选项}
+\subsection{一行五项}
+\xx
+{选项一}
+{选项二}
+{选项三}
+{选项四}
+{选项五}
+
+\subsection{一行四项}
+\xx
+{选项一长一点}
+{选项二}
+{选项三}
+{选项四}
+{选项五}
+
+\subsection{一行三项}
+\noindent 题目括号换行测试题目括号换行测试题目括号换行测试题目括号换行测试题目括号$\hfill(\qquad)$
+
+\xx
+{选项一继续加长点}
+{选项二}
+{选项三}
+{选项四}
+{选项五}
+
+\subsection{一行二项}
+\noindent 题目括号换行测试题目括号换行测试题目括号换行测试题目括号换行测试题目括号换行测试\hfill$\hfill(\qquad)$
+\xx
+{选项一再长一点，长到足够长}
+{选项二}
+{选项三}
+{选项四}
+{选项五}
+
+\subsection{一行一项}
+\xx
+{选项一非常非常长，超过行宽的一半，甚至可能超过行宽，看看是什么效果}
+{选项二}
+{选项三}
+{选项四}
+{选项五}
+
+\begin{enumerate}
+\item \xx{选项一一一一一}{选项二}{选项三}{选项四}
+\item \xx{选项一}{选项二}{选项三}{选项四}
+\item \xx{选项一}{选项二}{选项三}{选项四}
+\item \xx{选项一}{选项二}{选项三}{选项四}
+\item \xx{选项一}{选项二}{选项三}{选项四}
+\item \xx{选项一}{选项二}{选项三}{选项四}
+\item \xx{选项一}{选项二}{选项三}{选项四}
+\end{enumerate}
+\end{document}
